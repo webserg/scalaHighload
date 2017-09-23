@@ -1,16 +1,34 @@
+FROM alpine:edge
 
+# install bash
+RUN \
+  apk add --no-cache bash
 
-FROM java:8
+# install java
+RUN \
+  apk add --no-cache openjdk8
+
+# install jq
+RUN \
+  apk add --no-cache jq
+
+# install zip
+RUN \
+  apk add --no-cache zip
 
 RUN \
-  mkdir /tmp/hightload && \
-#  mkdir /tmp/data && \
-  mkdir /tmp/hightload/data
+  mkdir /tmp/hightload
+
 
 WORKDIR /tmp/hightload
-ADD ./webserver/target/scala-2.12 /tmp/hightload
+RUN \
+  mkdir /tmp/data
+ADD ./target/webserver.jar ./webserver.jar
 #COPY ./data.zip /tmp/data
+RUN \
+  mkdir /tmp/unzipped && \
+  export DATA_HOME=/tmp/unzipped
 EXPOSE 80
 
-CMD java -Xms3G -Xmx4G -jar ./webserver.jar
+CMD unzip /tmp/data/data.zip -d /tmp/unzipped && java -server -Xms3488m -Xmx3488m -jar ./webserver.jar
 
