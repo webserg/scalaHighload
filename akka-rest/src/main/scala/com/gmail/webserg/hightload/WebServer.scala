@@ -22,7 +22,6 @@ object WebServer {
     val webServerProps = WebServerProps(args(0), args(1))
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
-    unZip(webServerProps)
     val actorAddresses = loadData(webServerProps, system)
 
     val queryRouter: ActorRef = system.actorOf(RoundRobinPool(100).props(Props(new QueryRouter(actorAddresses))), QueryRouter.name)
@@ -48,11 +47,6 @@ object WebServer {
   }
 
 
-  def unZip(webServerProps: WebServerProps): Unit = {
-    val out = webServerProps.dataDirName
-    val in = webServerProps.archiveDirName + "data.zip"
-    Archivator.unzip(in, Paths.get(out))
-  }
 
   case class ActorAddresses(userActor: ActorRef, visitActor: ActorRef, locationActor: ActorRef, locationGetActor: ActorRef)
 
